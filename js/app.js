@@ -33,6 +33,7 @@
   var decryptStatus = $("decryptStatus");
   var decryptResult = $("decryptResult");
   var decryptResultMsg = $("decryptResultMsg");
+  var previewWrap = $("previewWrap");
   var downloadResult = $("downloadResult");
 
   var tabs = document.querySelectorAll(".tab");
@@ -43,6 +44,7 @@
   var decryptSourceFile = null;   // 選中的 .aes 檔案
   var decryptResultBlob = null;
   var decryptResultName = null;
+  var previewUrls = [];           // 預覽用的 object URL，避免記憶體洩漏
 
   // --- Tab 切換 ---
   tabs.forEach(function (tab) {
@@ -175,6 +177,7 @@
   clearDecrypt.addEventListener("click", function () {
     decryptSourceFile = null;
     decryptResultBlob = null;
+    clearPreview();
     UI.hide(decryptSelected);
     UI.hide(decryptResult);
     updateDecryptButton();
@@ -244,6 +247,74 @@
     }
   });
 
+  // --- 解密後預覽 ---
+  var TEXT_EXTS = { txt:1, md:1, markdown:1, json:1, js:1, mjs:1, ts:1, jsx:1, tsx:1, css:1, html:1, htm:1, xml:1, csv:1, log:1, yml:1, yaml:1, ini:1, conf:1, toml:1, sh:1, py:1, rb:1, java:1, c:1, cpp:1, h:1, hpp:1, sql:1 };
+  var IMAGE_EXTS = { png:1, jpg:1, jpeg:1, gif:1, webp:1, svg:1, bmp:1, ico:1, avif:1 };
+  var PDF_EXTS = { pdf:1 };
+  var AUDIO_EXTS = { mp3:1, wav:1, ogg:1, m4a:1, flac:1, aac:1 };
+  var VIDEO_EXTS = { mp4:1, webm:1, mov:1, m4v:1, ogv:1 };
+
+  function extOf(name) {
+    var m = /\.([^.]+)$/.exec(name || "");
+    return m ? m[1].toLowerCase() : "";
+  }
+
+  function clearPreview() {
+    previewUrls.forEach(function (u) { URL.revokeObjectURL(u); });
+    previewUrls = [];
+    previewWrap.innerHTML = "";
+    UI.hide(previewWrap);
+  }
+
+  function renderPreview(result) {
+    clearPreview();
+    if (result.isFolder) return; // 資料夾（ZIP）不提供瀏覽器預覽
+
+    var ext = extOf(result.originalName);
+
+    if (IMAGE_EXTS[ext]) {
+      var imgUrl = URL.createObjectURL(result.blob);
+      previewUrls.push(imgUrl);
+      var img = document.createElement("img");
+      img.src = imgUrl;
+      img.alt = result.originalName;
+      previewWrap.appendChild(img);
+      UI.show(previewWrap);
+    } else if (PDF_EXTS[ext]) {
+      var pdfUrl = URL.createObjectURL(result.blob);
+      previewUrls.push(pdfUrl);
+      var iframe = document.createElement("iframe");
+      iframe.src = pdfUrl;
+      iframe.title = result.originalName;
+      previewWrap.appendChild(iframe);
+      UI.show(previewWrap);
+    } else if (TEXT_EXTS[ext] && result.totalSize <= 2 * 1024 * 1024) {
+      result.blob.text().then(function (text) {
+        var pre = document.createElement("pre");
+        pre.textContent = text;
+        previewWrap.appendChild(pre);
+        UI.show(previewWrap);
+      }).catch(function () { /* 預覽失敗則略過 */ });
+    } else if (AUDIO_EXTS[ext]) {
+      var audioUrl = URL.createObjectURL(result.blob);
+      previewUrls.push(audioUrl);
+      var audio = document.createElement("audio");
+      audio.controls = true;
+      audio.src = audioUrl;
+      previewWrap.appendChild(audio);
+      UI.show(previewWrap);
+    } else if (VIDEO_EXTS[ext]) {
+      var videoUrl = URL.createObjectURL(result.blob);
+      previewUrls.push(videoUrl);
+      var video = document.createElement("video");
+      video.controls = true;
+      video.src = videoUrl;
+      previewWrap.appendChild(video);
+      UI.show(previewWrap);
+    }
+    // 其他類型不提供預覽，僅可下載
+  }
+
   // --- 解密流程 ---
   decryptBtn.addEventListener("click", async function () {
     var pw = decryptPassword.value;
@@ -274,14 +345,16 @@
         : result.originalName;
 
       decryptResultMsg.textContent = result.isFolder
-        ? "解密完成，還原為資料夾（ZIP 壓縮檔），解壓縮後即為原始資料夾結構。"
+        ? "解密完成，還原為資料夾（ZIP 壓縮檔），無法在瀏覽器預覽，請下載後解壓縮。"
         : "解密完成：" + result.originalName + "（" + FileHandler.formatSize(result.totalSize) + "）";
+      renderPreview(result);
       UI.show(downloadResult);
       UI.show(decryptResult);
       decryptStatus.textContent = "解密完成。";
     } catch (err) {
       console.error(err);
       decryptResultMsg.textContent = "解密失敗：密碼錯誤或檔案已損毀。";
+      clearPreview();
       UI.show(decryptResult);
       UI.hide(downloadResult);
       decryptStatus.textContent = "解密失敗。";
