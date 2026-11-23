@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AES-256 檔案加密分享工具</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>AES-256 檔案加密分享工具</h1>
+    <p class="note">所有加密／解密均在本機瀏覽器完成，密碼與檔案內容不會上傳到任何伺服器。</p>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="encrypt">加密</button>
+      <button type="button" class="tab" data-tab="decrypt">解密</button>
+    </div>
+
+    <!-- 加密區 -->
+    <section id="encrypt" class="panel active">
+      <div class="dropzone" id="encryptDrop">
+        <p>拖曳檔案到這裡，或</p>
+        <div class="actions">
+          <button type="button" id="pickFile">選擇檔案</button>
+          <button type="button" id="pickFolder">選擇資料夾</button>
+        </div>
+        <input type="file" id="fileInput" hidden>
+        <input type="file" id="folderInput" hidden webkitdirectory>
+      </div>
+
+      <div class="selected hidden" id="encryptSelected">
+        <span class="name" id="encryptSelectedName"></span>
+        <span class="size" id="encryptSelectedSize"></span>
+        <button type="button" class="link" id="clearEncrypt">清除</button>
+      </div>
+
+      <div class="field">
+        <label for="encryptPassword">解密密碼（至少 8 個字元）</label>
+        <div class="pw-row">
+          <input type="password" id="encryptPassword" placeholder="請輸入密碼" autocomplete="new-password">
+          <button type="button" class="link" id="toggleEncryptPw">顯示</button>
+        </div>
+        <div class="strength"><span id="strengthBar"></span></div>
+        <p class="hint" id="strengthLabel"></p>
+      </div>
+
+      <button type="button" class="primary" id="encryptBtn" disabled>加密並下載</button>
+
+      <div class="progress hidden" id="encryptProgress">
+        <div class="bar"><span id="encryptBar"></span></div>
+        <p id="encryptStatus"></p>
+      </div>
+    </section>
+
+    <!-- 解密區 -->
+    <section id="decrypt" class="panel">
+      <div class="dropzone" id="decryptDrop">
+        <p>拖曳 .aes 加密檔到這裡，或</p>
+        <div class="actions">
+          <button type="button" id="pickEncrypted">選擇加密檔</button>
+        </div>
+        <input type="file" id="encryptedInput" hidden accept=".aes,application/octet-stream">
+      </div>
+
+      <div class="selected hidden" id="decryptSelected">
+        <span class="name" id="decryptSelectedName"></span>
+        <span class="size" id="decryptSelectedSize"></span>
+        <button type="button" class="link" id="clearDecrypt">清除</button>
+      </div>
+
+      <div class="field">
+        <label for="decryptPassword">解密密碼</label>
+        <div class="pw-row">
+          <input type="password" id="decryptPassword" placeholder="請輸入密碼" autocomplete="new-password">
+          <button type="button" class="link" id="toggleDecryptPw">顯示</button>
+        </div>
+      </div>
+
+      <button type="button" class="primary" id="decryptBtn" disabled>解密</button>
+
+      <div class="progress hidden" id="decryptProgress">
+        <div class="bar"><span id="decryptBar"></span></div>
+        <p id="decryptStatus"></p>
+      </div>
+
+      <div class="result hidden" id="decryptResult">
+        <p id="decryptResultMsg"></p>
+        <button type="button" class="primary" id="downloadResult">下載還原檔案</button>
+        <p class="hint">解密內容僅暫存於記憶體，關閉或重整頁面後即自動清除，再次開啟仍需密碼。</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="lib/fflate.min.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/archive.js"></script>
+  <script src="js/file-handler.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

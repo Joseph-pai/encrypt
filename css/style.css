@@ -1,0 +1,203 @@
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-2: #273449;
+  --border: #334155;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger: #ef4444;
+  --ok: #22c55e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+    "Microsoft JhengHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+header {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 20px 8px;
+  text-align: center;
+}
+
+header h1 { margin: 0 0 8px; font-size: 26px; }
+
+.note { color: var(--muted); font-size: 14px; margin: 0; }
+
+main {
+  max-width: 720px;
+  margin: 24px auto 60px;
+  padding: 0 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  background: var(--panel);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 36px 20px;
+  text-align: center;
+  background: var(--panel);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone.dragover {
+  border-color: var(--accent);
+  background: var(--panel-2);
+}
+
+.dropzone p { margin: 0 0 16px; color: var(--muted); }
+
+.actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+button {
+  font-size: 15px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover { background: #334155; }
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  width: 100%;
+  margin-top: 16px;
+}
+
+button.primary:hover { background: var(--accent-hover); }
+button.primary:disabled { background: #475569; border-color: #475569; cursor: not-allowed; }
+
+button.link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: 0;
+  font-size: 14px;
+}
+
+button.link:hover { background: none; text-decoration: underline; }
+
+.selected {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selected .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.selected .size { color: var(--muted); font-size: 14px; }
+
+.field { margin-top: 16px; }
+.field label { display: block; font-size: 14px; margin-bottom: 6px; color: var(--muted); }
+
+.pw-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pw-row input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 15px;
+}
+
+.pw-row input:focus { outline: none; border-color: var(--accent); }
+
+.strength {
+  height: 6px;
+  background: var(--panel);
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.strength span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #64748b;
+  transition: width 0.2s;
+}
+
+.strength .strength-1 { background: var(--danger); }
+.strength .strength-2 { background: #f59e0b; }
+.strength .strength-3 { background: #eab308; }
+.strength .strength-4 { background: var(--ok); }
+
+.hint { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+
+.progress { margin-top: 16px; }
+.progress .bar {
+  height: 8px;
+  background: var(--panel);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress .bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.2s;
+}
+.progress p { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+
+.result {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.result p { margin: 0 0 12px; }
+.result .primary { margin-top: 0; }
+
+.hidden { display: none !important; }

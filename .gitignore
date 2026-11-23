@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# IDE 產生的暫存檔
+.screenshots/
+.trae-html-share-packages/
+
+# 依賴與日誌
+node_modules/
+*.log
+
+# 環境變數
+.env
+.env.*
